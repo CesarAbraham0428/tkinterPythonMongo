@@ -16,8 +16,21 @@ def Buscar(txt_cveGru, txt_nomGru):
     else:
         messagebox.showinfo("Resultado", "No se encontró el grupo.")
 
+#Abraham
 def Agregar(txt_cveGru, txt_nomGru):
-    pass
+    clave = txt_cveGru.get().strip()
+    nombre = txt_nomGru.get().strip()
+    if not clave or not nombre:
+        messagebox.showwarning("Advertencia", "Ingrese la Clave y el Nombre.")
+        return
+    
+    doc = grupo.find_one({"cveGru": clave})
+    if doc:
+        txt_nomGru.delete(0, "end")
+        txt_nomGru.insert(0, doc.get("nomGru", ""))
+    else:
+        grupo.insert_one({"cveGru": clave, "nomGru": nombre})
+        messagebox.showinfo("Éxito", "Grupo agregado correctamente.")
 
 def Modificar(txt_cveGru, txt_nomGru):
     clave = txt_cveGru.get().strip()

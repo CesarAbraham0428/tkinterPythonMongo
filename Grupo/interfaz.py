@@ -148,9 +148,9 @@ make_data_btn(export_frame, "↘️ Exportar JSON", ie.Exportar_JSON)
 make_data_btn(export_frame, "↗️ Importar JSON", ie.Importar_JSON)
 
 tk.Label(export_frame, text="Formatos CSV / XML", bg=BG_COLOR, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(10,0))
-make_data_btn(export_frame, "↘️ Exportar CSV", lambda: print("Exportar CSV")) # Dummy
-make_data_btn(export_frame, "↗️ Importar CSV", lambda: print("Importar CSV")) # Dummy
-make_data_btn(export_frame, "↘️ Exportar XML", ie.Exportar_XML) # Dummy
+make_data_btn(export_frame, "↘️ Exportar CSV", ie.Exportar_CSV)
+make_data_btn(export_frame, "↗️ Importar CSV", ie.Importar_CSV)
+make_data_btn(export_frame, "↘️ Exportar XML", ie.Exportar_XML)
 make_data_btn(export_frame, "↗️ Importar XML", ie.Importar_XML) 
 
 #PELIGRO Y SISTEMA
