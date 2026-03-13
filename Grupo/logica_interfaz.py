@@ -1,73 +1,73 @@
 from tkinter import messagebox
-from conexion import grupo
+from conexion import coleccion_grupos
 import import_export
 import backup
 
-def Buscar(txt_cveGru, txt_nomGru):
-    clave = txt_cveGru.get().strip()
-    if not clave:
+def buscar_grupo_por_clave(campo_clave_grupo, campo_nombre_grupo):
+    clave_grupo = campo_clave_grupo.get().strip()
+    if not clave_grupo:
         messagebox.showwarning("Advertencia", "Ingrese la Clave a buscar.")
         return
     
-    doc = grupo.find_one({"cveGru": clave})
-    if doc:
-        txt_nomGru.delete(0, "end")
-        txt_nomGru.insert(0, doc.get("nomGru", ""))
+    documento_grupo = coleccion_grupos.find_one({"cveGru": clave_grupo})
+    if documento_grupo:
+        campo_nombre_grupo.delete(0, "end")
+        campo_nombre_grupo.insert(0, documento_grupo.get("nomGru", ""))
     else:
         messagebox.showinfo("Resultado", "No se encontró el grupo.")
 
 #Abraham
-def Agregar(txt_cveGru, txt_nomGru):
-    clave = txt_cveGru.get().strip()
-    nombre = txt_nomGru.get().strip()
-    if not clave or not nombre:
+def agregar_grupo(campo_clave_grupo, campo_nombre_grupo):
+    clave_grupo = campo_clave_grupo.get().strip()
+    nombre_grupo = campo_nombre_grupo.get().strip()
+    if not clave_grupo or not nombre_grupo:
         messagebox.showwarning("Advertencia", "Ingrese la Clave y el Nombre.")
         return
     
-    doc = grupo.find_one({"cveGru": clave})
-    if doc:
-        txt_nomGru.delete(0, "end")
-        txt_nomGru.insert(0, doc.get("nomGru", ""))
+    documento_existente = coleccion_grupos.find_one({"cveGru": clave_grupo})
+    if documento_existente:
+        messagebox.showwarning("Advertencia", "Clave de grupo repetida ya existe un grupo con esa clave.")
     else:
-        grupo.insert_one({"cveGru": clave, "nomGru": nombre})
+        coleccion_grupos.insert_one({"cveGru": clave_grupo, "nomGru": nombre_grupo})
         messagebox.showinfo("Éxito", "Grupo agregado correctamente.")
+        limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo)
 
-def Modificar(txt_cveGru, txt_nomGru):
-    clave = txt_cveGru.get().strip()
-    nombre = txt_nomGru.get().strip()
+def modificar_grupo(campo_clave_grupo, campo_nombre_grupo):
+    clave_grupo = campo_clave_grupo.get().strip()
+    nombre_grupo = campo_nombre_grupo.get().strip()
     
-    if not clave or not nombre:
+    if not clave_grupo or not nombre_grupo:
         messagebox.showwarning("Advertencia", "Ingrese Clave y Nombre a modificar.")
         return
     
-    result = grupo.update_one({"cveGru": clave}, {"$set": {"nomGru": nombre}})
-    if result.matched_count > 0:
+    resultado_modificacion = coleccion_grupos.update_one({"cveGru": clave_grupo}, {"$set": {"nomGru": nombre_grupo}})
+    if resultado_modificacion.matched_count > 0:
         messagebox.showinfo("Éxito", "Grupo modificado correctamente.")
     else:
         messagebox.showinfo("Resultado", "No se encontró el grupo para modificar.")
 
-def Eliminar(txt_cveGru, txt_nomGru):
-    clave = txt_cveGru.get().strip()
-    if not clave:
+def eliminar_grupo(campo_clave_grupo, campo_nombre_grupo):
+    clave_grupo = campo_clave_grupo.get().strip()
+    if not clave_grupo:
         messagebox.showwarning("Advertencia", "Ingrese la Clave a eliminar.")
         return
     
     # Pendiente: Validacion de eliminacion en cascada con Alumnos.
-    result = grupo.delete_one({"cveGru": clave})
-    if result.deleted_count > 0:
+    resultado_eliminacion = coleccion_grupos.delete_one({"cveGru": clave_grupo})
+    if resultado_eliminacion.deleted_count > 0:
         messagebox.showinfo("Éxito", "Grupo eliminado correctamente.")
-        Limpiar(txt_cveGru, txt_nomGru)
+        limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo)
     else:
         messagebox.showinfo("Resultado", "No se encontró el grupo para eliminar.")
 
-def Limpiar(txt_cveGru, txt_nomGru):
-    txt_cveGru.delete(0, "end")
-    txt_nomGru.delete(0, "end")
+def limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo):
+    campo_clave_grupo.delete(0, "end")
+    campo_nombre_grupo.delete(0, "end")
 
-def EliminarTodos():
+def eliminar_todos_los_grupos():
     if messagebox.askyesno("Confirmación", "¿Está seguro de eliminar TODOS los grupos?"):
         try:
-            resultado = grupo.delete_many({})
-            messagebox.showinfo("Éxito", f"Se eliminaron {resultado.deleted_count} grupos.")
-        except Exception as e:
-            messagebox.showerror("Error", f"Fallo al eliminar: {e}")
+            resultado_eliminacion = coleccion_grupos.delete_many({})
+            messagebox.showinfo("Éxito", f"Se eliminaron {resultado_eliminacion.deleted_count} grupos.")
+        except Exception as error_excepcion:
+            messagebox.showerror("Error", f"Fallo al eliminar: {error_excepcion}")

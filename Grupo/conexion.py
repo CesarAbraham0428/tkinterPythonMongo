@@ -1,7 +1,7 @@
-from pymongo import MongoClient as MC
+from pymongo import MongoClient as ClienteMongo
 
-cliente = MC("mongodb://localhost:27017/")
+cliente_mongodb = ClienteMongo("mongodb://localhost:27017/")
 
-db = cliente["BD_GrupoAlumno"]
+base_datos_grupos = cliente_mongodb["BD_GrupoAlumno"]
 
-grupo = db["Grupo"]
+coleccion_grupos = base_datos_grupos["Grupo"]

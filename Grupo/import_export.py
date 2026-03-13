@@ -6,138 +6,138 @@ import os
 
 from tkinter import filedialog, messagebox
 
-from conexion import grupo
+from conexion import coleccion_grupos
 
 
-def Exportar_JSON():
-    docs = list(grupo.find({}, {"_id": 0, "cveGru": 1, "nomGru": 1}))
-    if not docs:
+def exportar_json():
+    documentos_grupos = list(coleccion_grupos.find({}, {"_id": 0, "cveGru": 1, "nomGru": 1}))
+    if not documentos_grupos:
         messagebox.showinfo("Exportar", "No hay grupos para exportar.")
         return
 
-    carpeta = r"C:\Backup_Mongo"
-    archivo = os.path.join(carpeta, "grupos.json")
+    carpeta_backup = r"C:\Backup_Mongo"
+    ruta_archivo = os.path.join(carpeta_backup, "grupos.json")
 
-    os.makedirs(carpeta, exist_ok=True)
+    os.makedirs(carpeta_backup, exist_ok=True)
 
     try:
-        with open(archivo, "w", encoding="utf-8") as f:
-            json.dump(docs, f, ensure_ascii=False, indent=4)
-        messagebox.showinfo("Éxito", f"Exportación a JSON completada en:\n{archivo}")
-    except Exception as e:
-        messagebox.showerror("Error", f"Error al exportar JSON: {e}")
+        with open(ruta_archivo, "w", encoding="utf-8") as archivo_json:
+            json.dump(documentos_grupos, archivo_json, ensure_ascii=False, indent=4)
+        messagebox.showinfo("Éxito", f"Exportación a JSON completada en:\n{ruta_archivo}")
+    except Exception as error_excepcion:
+        messagebox.showerror("Error", f"Error al exportar JSON: {error_excepcion}")
 
 
-def Importar_JSON():
-    carpeta = r"C:\Backup_Mongo"
-    ruta = os.path.join(carpeta, "grupos.json")
+def importar_json():
+    carpeta_backup = r"C:\Backup_Mongo"
+    ruta_archivo = os.path.join(carpeta_backup, "grupos.json")
 
-    if not os.path.exists(ruta):
-        messagebox.showerror("Error", f"No se encontró el archivo:\n{ruta}")
+    if not os.path.exists(ruta_archivo):
+        messagebox.showerror("Error", f"No se encontró el archivo:\n{ruta_archivo}")
         return
 
     try:
-        with open(ruta, "r", encoding="utf-8") as f:
-            datos = json.load(f)
+        with open(ruta_archivo, "r", encoding="utf-8") as archivo_json:
+            datos_importacion = json.load(archivo_json)
 
-        insertados = 0
-        for doc in datos:
-            cve = doc.get("cveGru")
-            if cve and not grupo.find_one({"cveGru": cve}):
-                grupo.insert_one({"cveGru": cve, "nomGru": doc.get("nomGru", "")})
-                insertados += 1
-        messagebox.showinfo("Éxito", f"Se importaron {insertados} grupos desde JSON.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Error al importar JSON: {e}")
+        grupos_insertados = 0
+        for documento_grupo in datos_importacion:
+            clave_grupo = documento_grupo.get("cveGru")
+            if clave_grupo and not coleccion_grupos.find_one({"cveGru": clave_grupo}):
+                coleccion_grupos.insert_one({"cveGru": clave_grupo, "nomGru": documento_grupo.get("nomGru", "")})
+                grupos_insertados += 1
+        messagebox.showinfo("Éxito", f"Se importaron {grupos_insertados} grupos desde JSON.")
+    except Exception as error_excepcion:
+        messagebox.showerror("Error", f"Error al importar JSON: {error_excepcion}")
 
 
-def Exportar_XML():
-    docs = list(grupo.find({}, {"_id": 0, "cveGru": 1, "nomGru": 1}))
-    if not docs:
+def exportar_xml():
+    documentos_grupos = list(coleccion_grupos.find({}, {"_id": 0, "cveGru": 1, "nomGru": 1}))
+    if not documentos_grupos:
         messagebox.showinfo("Exportar", "No hay grupos para exportar.")
         return
 
-    carpeta = r"C:\Backup_Mongo"
-    archivo = os.path.join(carpeta, "grupos.xml")
+    carpeta_backup = r"C:\Backup_Mongo"
+    ruta_archivo = os.path.join(carpeta_backup, "grupos.xml")
 
     # crear carpeta si no existe
-    os.makedirs(carpeta, exist_ok=True)
+    os.makedirs(carpeta_backup, exist_ok=True)
 
     try:
-        root = ET.Element("Grupos")
-        for g in docs:
-            grupo_elem = ET.SubElement(root, "Grupo")
-            ET.SubElement(grupo_elem, "Clave").text = str(g.get("cveGru", ""))
-            ET.SubElement(grupo_elem, "Nombre").text = str(g.get("nomGru", ""))
+        elemento_raiz = ET.Element("Grupos")
+        for datos_grupo in documentos_grupos:
+            elemento_grupo = ET.SubElement(elemento_raiz, "Grupo")
+            ET.SubElement(elemento_grupo, "Clave").text = str(datos_grupo.get("cveGru", ""))
+            ET.SubElement(elemento_grupo, "Nombre").text = str(datos_grupo.get("nomGru", ""))
 
-        tree = ET.ElementTree(root)
-        tree.write(archivo, encoding="utf-8", xml_declaration=True)
-        messagebox.showinfo("Éxito", f"Exportación a XML completada en:\n{archivo}")
-    except Exception as e:
-        messagebox.showerror("Error", f"Error al exportar XML: {e}")
+        arbol_xml = ET.ElementTree(elemento_raiz)
+        arbol_xml.write(ruta_archivo, encoding="utf-8", xml_declaration=True)
+        messagebox.showinfo("Éxito", f"Exportación a XML completada en:\n{ruta_archivo}")
+    except Exception as error_excepcion:
+        messagebox.showerror("Error", f"Error al exportar XML: {error_excepcion}")
 
 
-def Importar_XML():
-    carpeta = r"C:\Backup_Mongo"
-    ruta = os.path.join(carpeta, "grupos.xml")
+def importar_xml():
+    carpeta_backup = r"C:\Backup_Mongo"
+    ruta_archivo = os.path.join(carpeta_backup, "grupos.xml")
 
-    if not os.path.exists(ruta):
-        messagebox.showerror("Error", f"No se encontró el archivo:\n{ruta}")
+    if not os.path.exists(ruta_archivo):
+        messagebox.showerror("Error", f"No se encontró el archivo:\n{ruta_archivo}")
         return
 
     try:
-        tree = ET.parse(ruta)
-        root = tree.getroot()
-        insertados = 0
-        for g in root.findall("Grupo"):
-            clave = g.find("Clave").text
-            nombre = g.find("Nombre").text
-            if clave and not grupo.find_one({"cveGru": clave}):
-                grupo.insert_one({"cveGru": clave, "nomGru": nombre or ""})
-                insertados += 1
-        messagebox.showinfo("Éxito", f"Se importaron {insertados} grupos desde XML.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Error al importar XML: {e}")
+        arbol_xml = ET.parse(ruta_archivo)
+        elemento_raiz = arbol_xml.getroot()
+        grupos_insertados = 0
+        for elemento_grupo in elemento_raiz.findall("Grupo"):
+            clave_grupo = elemento_grupo.find("Clave").text
+            nombre_grupo = elemento_grupo.find("Nombre").text
+            if clave_grupo and not coleccion_grupos.find_one({"cveGru": clave_grupo}):
+                coleccion_grupos.insert_one({"cveGru": clave_grupo, "nomGru": nombre_grupo or ""})
+                grupos_insertados += 1
+        messagebox.showinfo("Éxito", f"Se importaron {grupos_insertados} grupos desde XML.")
+    except Exception as error_excepcion:
+        messagebox.showerror("Error", f"Error al importar XML: {error_excepcion}")
 
-def Exportar_CSV():
-    docs = list(grupo.find({}, {"_id": 0, "cveGru": 1, "nomGru": 1}))
-    if not docs:
+def exportar_csv():
+    documentos_grupos = list(coleccion_grupos.find({}, {"_id": 0, "cveGru": 1, "nomGru": 1}))
+    if not documentos_grupos:
         messagebox.showinfo("Exportar", "No hay grupos para exportar.")
         return
 
-    carpeta = r"C:\Backup_Mongo"
-    archivo = os.path.join(carpeta, "grupos.csv")
+    carpeta_backup = r"C:\Backup_Mongo"
+    ruta_archivo = os.path.join(carpeta_backup, "grupos.csv")
 
-    os.makedirs(carpeta, exist_ok=True)
+    os.makedirs(carpeta_backup, exist_ok=True)
 
     try:
-        with open(archivo, mode="w", newline="", encoding="utf-8") as file:
-            writer = csv.writer(file)
-            writer.writerow(["Clave", "Nombre"])
-            for g in docs:
-                writer.writerow([g.get("cveGru", ""), g.get("nomGru", "")])
-        messagebox.showinfo("Éxito", f"Exportación a CSV completada en:\n{archivo}")
-    except Exception as e:
-        messagebox.showerror("Error", f"Error al exportar CSV: {e}")
+        with open(ruta_archivo, mode="w", newline="", encoding="utf-8") as archivo_csv:
+            escritor_csv = csv.writer(archivo_csv)
+            escritor_csv.writerow(["Clave", "Nombre"])
+            for datos_grupo in documentos_grupos:
+                escritor_csv.writerow([datos_grupo.get("cveGru", ""), datos_grupo.get("nomGru", "")])
+        messagebox.showinfo("Éxito", f"Exportación a CSV completada en:\n{ruta_archivo}")
+    except Exception as error_excepcion:
+        messagebox.showerror("Error", f"Error al exportar CSV: {error_excepcion}")
 
-def Importar_CSV():
-    carpeta = r"C:\Backup_Mongo"
-    ruta = os.path.join(carpeta, "grupos.csv")
+def importar_csv():
+    carpeta_backup = r"C:\Backup_Mongo"
+    ruta_archivo = os.path.join(carpeta_backup, "grupos.csv")
 
-    if not os.path.exists(ruta):
-        messagebox.showerror("Error", f"No se encontró el archivo:\n{ruta}")
+    if not os.path.exists(ruta_archivo):
+        messagebox.showerror("Error", f"No se encontró el archivo:\n{ruta_archivo}")
         return
 
     try:
-        with open(ruta, mode="r", encoding="utf-8") as file:
-            lector = csv.DictReader(file)
-            insertados = 0
-            for fila in lector:
-                cve = fila.get("Clave")
-                nom = fila.get("Nombre")
-                if cve and not grupo.find_one({"cveGru": cve}):
-                    grupo.insert_one({"cveGru": cve, "nomGru": nom or ""})
-                    insertados += 1
-        messagebox.showinfo("Éxito", f"Se importaron {insertados} grupos desde CSV.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Error al importar CSV: {e}")
+        with open(ruta_archivo, mode="r", encoding="utf-8") as archivo_csv:
+            lector_csv = csv.DictReader(archivo_csv)
+            grupos_insertados = 0
+            for fila_datos in lector_csv:
+                clave_grupo = fila_datos.get("Clave")
+                nombre_grupo = fila_datos.get("Nombre")
+                if clave_grupo and not coleccion_grupos.find_one({"cveGru": clave_grupo}):
+                    coleccion_grupos.insert_one({"cveGru": clave_grupo, "nomGru": nombre_grupo or ""})
+                    grupos_insertados += 1
+        messagebox.showinfo("Éxito", f"Se importaron {grupos_insertados} grupos desde CSV.")
+    except Exception as error_excepcion:
+        messagebox.showerror("Error", f"Error al importar CSV: {error_excepcion}")

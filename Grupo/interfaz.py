@@ -4,10 +4,10 @@ import logica_interfaz as li
 import import_export as ie
 import backup as bk
 
-ventana = tk.Tk()
-ventana.title("Admon Grupos")
-ventana.geometry("750x650")
-ventana.resizable(False, False)
+ventana_principal = tk.Tk()
+ventana_principal.title("Admon Grupos")
+ventana_principal.geometry("750x650")
+ventana_principal.resizable(False, False)
 
 # Colores y fuentes base
 COLOR_FONDO = "#F4F6F9"
@@ -23,147 +23,145 @@ FONT_LABEL = ("Segoe UI", 11)
 FONT_ENTRY = ("Segoe UI", 12)
 FONT_BTN = ("Segoe UI", 11, "bold")
 
-ventana.config(bg=COLOR_FONDO)
+ventana_principal.config(bg=COLOR_FONDO)
 
-
-style = ttk.Style()
-style.theme_use('clam')
+estilo_interfaz = ttk.Style()
+estilo_interfaz.theme_use('clam')
 
 # Estilo para Frames
-style.configure("TFrame", background=COLOR_FONDO)
-style.configure("Card.TFrame", background="#FFFFFF", relief="flat")
+estilo_interfaz.configure("TFrame", background=COLOR_FONDO)
+estilo_interfaz.configure("Card.TFrame", background="#FFFFFF", relief="flat")
 
 # Estilos universales para Entries
-style.configure("TEntry", fieldbackground="#FFFFFF", font=FONT_ENTRY, padding=5)
+estilo_interfaz.configure("TEntry", fieldbackground="#FFFFFF", font=FONT_ENTRY, padding=5)
 
 # Función helper para crear botones tkinter con Hover
-def crear_boton(parent, text, command, color_fondo, color_texto=COLOR_TEXTO_BOTON, width=15):
-    btn = tk.Button(parent, text=text, font=FONT_BTN, command=command,
-                    bg=color_fondo, fg=color_texto, width=width,
+def crear_boton_personalizado(contenedor_padre, texto_boton, comando_boton, color_fondo_boton, color_texto_boton=COLOR_TEXTO_BOTON, ancho_boton=15):
+    boton_personalizado = tk.Button(contenedor_padre, text=texto_boton, font=FONT_BTN, command=comando_boton,
+                    bg=color_fondo_boton, fg=color_texto_boton, width=ancho_boton,
                     relief="flat", cursor="hand2", pady=8)
     
-    # Hover effects
-    def on_enter(e):
-        btn['bg'] = color_variant(color_fondo, -20)
+    # Efectos Hover
+    def al_entrar_mouse(evento):
+        boton_personalizado['bg'] = variante_color(color_fondo_boton, -20)
     
-    def on_leave(e):
-        btn['bg'] = color_fondo
+    def al_salir_mouse(evento):
+        boton_personalizado['bg'] = color_fondo_boton
         
-    btn.bind("<Enter>", on_enter)
-    btn.bind("<Leave>", on_leave)
-    return btn
+    boton_personalizado.bind("<Enter>", al_entrar_mouse)
+    boton_personalizado.bind("<Leave>", al_salir_mouse)
+    return boton_personalizado
 
-def color_variant(hex_color, brightness_offset=1):
+def variante_color(color_hexadecimal, desplazamiento_brillo=1):
     """ Función auxiliar para oscurecer colores en el hover """
-    if len(hex_color) != 7: return hex_color
-    rgb_hex = [hex_color[x:x+2] for x in [1, 3, 5]]
-    new_rgb_int = [int(hex_value, 16) + brightness_offset for hex_value in rgb_hex]
-    new_rgb_int = [min([255, max([0, i])]) for i in new_rgb_int]
-    return "#" + "".join([hex(i)[2:].zfill(2) for i in new_rgb_int])
+    if len(color_hexadecimal) != 7: return color_hexadecimal
+    componentes_rgb = [color_hexadecimal[x:x+2] for x in [1, 3, 5]]
+    nuevos_rgb_int = [int(componente_hex, 16) + desplazamiento_brillo for componente_hex in componentes_rgb]
+    nuevos_rgb_int = [min([255, max([0, i])]) for i in nuevos_rgb_int]
+    return "#" + "".join([hex(i)[2:].zfill(2) for i in nuevos_rgb_int])
 
 # ======= HEADER =======
-header_frame = tk.Frame(ventana, bg=COLOR_OSCURO, pady=15)
-header_frame.pack(fill="x", side="top")
-lbl_title = tk.Label(header_frame, text="Gestión de Grupos", bg=COLOR_OSCURO, fg="#FFFFFF", font=FONT_TITLE)
-lbl_title.pack()
+marco_encabezado = tk.Frame(ventana_principal, bg=COLOR_OSCURO, pady=15)
+marco_encabezado.pack(fill="x", side="top")
+etiqueta_titulo = tk.Label(marco_encabezado, text="Gestión de Grupos", bg=COLOR_OSCURO, fg="#FFFFFF", font=FONT_TITLE)
+etiqueta_titulo.pack()
 
-container_frame = ttk.Frame(ventana)
-container_frame.pack(fill="both", expand=True)
+marco_contenedor = ttk.Frame(ventana_principal)
+marco_contenedor.pack(fill="both", expand=True)
 
-canvas = tk.Canvas(container_frame, bg=COLOR_FONDO, highlightthickness=0)
-canvas.pack(side="left", fill="both", expand=True)
+lienzo_interfaz = tk.Canvas(marco_contenedor, bg=COLOR_FONDO, highlightthickness=0)
+lienzo_interfaz.pack(side="left", fill="both", expand=True)
 
 # Crear la Scrollbar
-scrollbar = ttk.Scrollbar(container_frame, orient="vertical", command=canvas.yview)
-scrollbar.pack(side="right", fill="y")
-canvas.configure(yscrollcommand=scrollbar.set)
+barra_desplazamiento = ttk.Scrollbar(marco_contenedor, orient="vertical", command=lienzo_interfaz.yview)
+barra_desplazamiento.pack(side="right", fill="y")
+lienzo_interfaz.configure(yscrollcommand=barra_desplazamiento.set)
 
 # Crear el frame que realmente tendrá los widgets (se alojará en el Canvas)
-main_container = ttk.Frame(canvas, padding=20)
-style.configure("TFrame", background=COLOR_FONDO) # Asegurar bg
+contenedor_principal = ttk.Frame(lienzo_interfaz, padding=20)
+estilo_interfaz.configure("TFrame", background=COLOR_FONDO) # Asegurar bg
 
-canvas_window = canvas.create_window((0, 0), window=main_container, anchor="nw")
+ventana_lienzo = lienzo_interfaz.create_window((0, 0), window=contenedor_principal, anchor="nw")
 
 # Funciones para actualizar la región de scroll automáticamente
-def on_configure(event):
-    canvas.configure(scrollregion=canvas.bbox("all"))
+def al_configurar_contenedor(evento):
+    lienzo_interfaz.configure(scrollregion=lienzo_interfaz.bbox("all"))
 
-def on_canvas_configure(event):
-    # Hacer que el main_container tome el ancho del canvas si es menor
-    canvas.itemconfig(canvas_window, width=event.width)
+def al_configurar_lienzo(evento):
+    # Hacer que el contenedor_principal tome el ancho del lienzo_interfaz si es menor
+    lienzo_interfaz.itemconfig(ventana_lienzo, width=evento.width)
 
-main_container.bind("<Configure>", on_configure)
-canvas.bind("<Configure>", on_canvas_configure)
+contenedor_principal.bind("<Configure>", al_configurar_contenedor)
+lienzo_interfaz.bind("<Configure>", al_configurar_lienzo)
 
 # Soporte para rueda del ratón
-def _on_mousewheel(event):
-    canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-ventana.bind_all("<MouseWheel>", _on_mousewheel)
+def _al_mover_rueda_ratón(evento):
+    lienzo_interfaz.yview_scroll(int(-1*(evento.delta/120)), "units")
+ventana_principal.bind_all("<MouseWheel>", _al_mover_rueda_ratón)
 
 # BÚSQUEDA Y DATOS
-search_frame = tk.Frame(main_container, bg="#FFFFFF", padx=20, pady=20, relief="solid", bd=1)
-search_frame.pack(fill="x", pady=(0, 15))
+marco_busqueda = tk.Frame(contenedor_principal, bg="#FFFFFF", padx=20, pady=20, relief="solid", bd=1)
+marco_busqueda.pack(fill="x", pady=(0, 15))
 
 # Campos
-tk.Label(search_frame, text="Clave del Grupo:", bg="#FFFFFF", font=FONT_LABEL, fg=COLOR_OSCURO).grid(row=0, column=0, sticky="w", pady=5)
-txt_cveGru = tk.Entry(search_frame, font=FONT_ENTRY, width=25, relief="solid", bd=1)
-txt_cveGru.grid(row=0, column=1, padx=10, pady=5)
+tk.Label(marco_busqueda, text="Clave del Grupo:", bg="#FFFFFF", font=FONT_LABEL, fg=COLOR_OSCURO).grid(row=0, column=0, sticky="w", pady=5)
+campo_clave_grupo = tk.Entry(marco_busqueda, font=FONT_ENTRY, width=25, relief="solid", bd=1)
+campo_clave_grupo.grid(row=0, column=1, padx=10, pady=5)
 
-tk.Label(search_frame, text="Nombre del Grupo:", bg="#FFFFFF", font=FONT_LABEL, fg=COLOR_OSCURO).grid(row=1, column=0, sticky="w", pady=5)
-txt_nomGru = tk.Entry(search_frame, font=FONT_ENTRY, width=25, relief="solid", bd=1)
-txt_nomGru.grid(row=1, column=1, padx=10, pady=5)
+tk.Label(marco_busqueda, text="Nombre del Grupo:", bg="#FFFFFF", font=FONT_LABEL, fg=COLOR_OSCURO).grid(row=1, column=0, sticky="w", pady=5)
+campo_nombre_grupo = tk.Entry(marco_busqueda, font=FONT_ENTRY, width=25, relief="solid", bd=1)
+campo_nombre_grupo.grid(row=1, column=1, padx=10, pady=5)
 
 # Botones
-btn_Buscar = crear_boton(search_frame, "Buscar", lambda: li.Buscar(txt_cveGru, txt_nomGru), AZUL)
-btn_Buscar.grid(row=0, column=2, padx=(20,5), pady=5)
-btn_Limpiar = crear_boton(search_frame, "Limpiar", lambda: li.Limpiar(txt_cveGru, txt_nomGru), "#9E9E9E")
-btn_Limpiar.grid(row=1, column=2, padx=(20,5), pady=5)
-
+boton_buscar = crear_boton_personalizado(marco_busqueda, "Buscar", lambda: li.buscar_grupo_por_clave(campo_clave_grupo, campo_nombre_grupo), AZUL)
+boton_buscar.grid(row=0, column=2, padx=(20,5), pady=5)
+boton_limpiar = crear_boton_personalizado(marco_busqueda, "Limpiar", lambda: li.limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo), "#9E9E9E")
+boton_limpiar.grid(row=1, column=2, padx=(20,5), pady=5)
 
 #OPERACIONES CRUD Y ARCHIVOS
-ops_frame = tk.Frame(main_container, bg=COLOR_FONDO)
-ops_frame.pack(fill="x", pady=(0, 15))
+marco_operaciones = tk.Frame(contenedor_principal, bg=COLOR_FONDO)
+marco_operaciones.pack(fill="x", pady=(0, 15))
 
-ops_frame.grid_columnconfigure(0, weight=1)
-ops_frame.grid_columnconfigure(1, weight=1)
+marco_operaciones.grid_columnconfigure(0, weight=1)
+marco_operaciones.grid_columnconfigure(1, weight=1)
 
 # Acciones de Registro
-crud_frame = tk.LabelFrame(ops_frame, text=" Acciones de Registro ", bg=COLOR_FONDO, font=FONT_LABEL, fg=COLOR_OSCURO, pady=10, padx=10)
-crud_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
+marco_crud = tk.LabelFrame(marco_operaciones, text=" Acciones de Registro ", bg=COLOR_FONDO, font=FONT_LABEL, fg=COLOR_OSCURO, pady=10, padx=10)
+marco_crud.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
 
-crear_boton(crud_frame, "Agregar", lambda: li.Agregar(txt_cveGru, txt_nomGru), VERDE, width=20).pack(pady=5)
-crear_boton(crud_frame, "Modificar", lambda: li.Modificar(txt_cveGru, txt_nomGru), NARANJA, width=20).pack(pady=5)
-crear_boton(crud_frame, "Eliminar", lambda: li.Eliminar(txt_cveGru, txt_nomGru), ROJO, width=20).pack(pady=5)
+crear_boton_personalizado(marco_crud, "Agregar", lambda: li.agregar_grupo(campo_clave_grupo, campo_nombre_grupo), VERDE, ancho_boton=20).pack(pady=5)
+crear_boton_personalizado(marco_crud, "Modificar", lambda: li.modificar_grupo(campo_clave_grupo, campo_nombre_grupo), NARANJA, ancho_boton=20).pack(pady=5)
+crear_boton_personalizado(marco_crud, "Eliminar", lambda: li.eliminar_grupo(campo_clave_grupo, campo_nombre_grupo), ROJO, ancho_boton=20).pack(pady=5)
 
 # Importación y Exportación
-export_frame = tk.LabelFrame(ops_frame, text=" Importación / Exportación ", bg=COLOR_FONDO, font=FONT_LABEL, fg=COLOR_OSCURO, pady=10, padx=10)
-export_frame.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
+marco_exportacion = tk.LabelFrame(marco_operaciones, text=" Importación / Exportación ", bg=COLOR_FONDO, font=FONT_LABEL, fg=COLOR_OSCURO, pady=10, padx=10)
+marco_exportacion.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
 
 # Subdividir para CSV, JSON, XML
-def make_data_btn(parent, text, cmd):
-    return crear_boton(parent, text, cmd, "#607D8B", width=18).pack(pady=4)
+def crear_boton_datos(contenedor_padre, texto_boton, comando_boton):
+    return crear_boton_personalizado(contenedor_padre, texto_boton, comando_boton, "#607D8B", ancho_boton=18).pack(pady=4)
 
-tk.Label(export_frame, text="Formato JSON", bg=COLOR_FONDO, font=("Segoe UI", 9, "bold")).pack(anchor="w")
-make_data_btn(export_frame, "Exportar JSON", ie.Exportar_JSON)
-make_data_btn(export_frame, "Importar JSON", ie.Importar_JSON)
+tk.Label(marco_exportacion, text="Formato JSON", bg=COLOR_FONDO, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+crear_boton_datos(marco_exportacion, "Exportar JSON", ie.exportar_json)
+crear_boton_datos(marco_exportacion, "Importar JSON", ie.importar_json)
 
-tk.Label(export_frame, text="Formatos CSV / XML", bg=COLOR_FONDO, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(10,0))
-make_data_btn(export_frame, "Exportar CSV", ie.Exportar_CSV)
-make_data_btn(export_frame, "Importar CSV", ie.Importar_CSV)
-make_data_btn(export_frame, "Exportar XML", ie.Exportar_XML)
-make_data_btn(export_frame, "Importar XML", ie.Importar_XML) 
+tk.Label(marco_exportacion, text="Formatos CSV / XML", bg=COLOR_FONDO, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(10,0))
+crear_boton_datos(marco_exportacion, "Exportar CSV", ie.exportar_csv)
+crear_boton_datos(marco_exportacion, "Importar CSV", ie.importar_csv)
+crear_boton_datos(marco_exportacion, "Exportar XML", ie.exportar_xml)
+crear_boton_datos(marco_exportacion, "Importar XML", ie.importar_xml) 
 
 #PELIGRO Y SISTEMA
-danger_frame = tk.LabelFrame(main_container, text=" Opciones de Sistema ", bg="#FFF3F3", fg=ROJO, font=FONT_LABEL, pady=15, padx=10)
-danger_frame.pack(fill="x", pady=(10, 0))
+marco_peligro = tk.LabelFrame(contenedor_principal, text=" Opciones de Sistema ", bg="#FFF3F3", fg=ROJO, font=FONT_LABEL, pady=15, padx=10)
+marco_peligro.pack(fill="x", pady=(10, 0))
 
-btn_Backup = crear_boton(danger_frame, "Ejecutar Backup Completo", bk.Ejecutar_Backup, "#3F51B5", width=35)
-btn_Backup.pack(pady=5)
+boton_backup = crear_boton_personalizado(marco_peligro, "Ejecutar Backup Completo", bk.ejecutar_backup_completo, "#3F51B5", ancho_boton=35)
+boton_backup.pack(pady=5)
 
-btn_EliminarTodos = crear_boton(danger_frame, "Eliminar TODOS los Grupos", li.EliminarTodos, "#D32F2F", width=35)
-btn_EliminarTodos.pack(pady=5)
+boton_eliminar_todos = crear_boton_personalizado(marco_peligro, "Eliminar TODOS los Grupos", li.eliminar_todos_los_grupos, "#D32F2F", ancho_boton=35)
+boton_eliminar_todos.pack(pady=5)
 
-btn_RestaurarTodos = crear_boton(danger_frame, "Restaurar TODOS los Grupos", bk.Restaurar_Todos, "#F57C00", width=35)
-btn_RestaurarTodos.pack(pady=5)
+boton_restaurar_todos = crear_boton_personalizado(marco_peligro, "Restaurar TODOS los Grupos", bk.restaurar_todos_los_grupos, "#F57C00", ancho_boton=35)
+boton_restaurar_todos.pack(pady=5)
 
-ventana.mainloop()
+ventana_principal.mainloop()
