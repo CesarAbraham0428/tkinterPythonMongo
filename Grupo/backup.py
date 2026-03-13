@@ -1,7 +1,6 @@
 #Abraham
 from tkinter import messagebox
 
-
 import os
 
 
@@ -13,6 +12,16 @@ def ejecutar_backup_completo():
 
 
 def restaurar_todos_los_grupos():
+
+    ruta_backup = r"C:\Backup_Mongo\BD_GrupoAlumno\Grupo.bson"
+
+    # Validar si existe el archivo de respaldo
+    if not os.path.exists(ruta_backup):
+        messagebox.showwarning("Advertencia", "No existe el archivo de respaldo para restaurar.")
+        return
+
     comando_mongorestore = '"C:\\Program Files\\MongoDB\\Tools\\100\\bin\\mongorestore.exe" --db BD_GrupoAlumno --collection Grupo C:\\Backup_Mongo\\BD_GrupoAlumno\\Grupo.bson'
+    
     os.system(comando_mongorestore)
-    messagebox.showinfo("Éxito", f"Se Restauraron todos los grupos correctamente.")
+
+    messagebox.showinfo("Éxito", "Se restauraron todos los grupos correctamente.")
