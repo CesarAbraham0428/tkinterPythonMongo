@@ -37,15 +37,11 @@ estilo_interfaz.configure("Card.TFrame", background="#FFFFFF", relief="flat")
 # Estilos universales para Entries
 estilo_interfaz.configure("TEntry", fieldbackground="#FFFFFF", font=FONT_ENTRY, padding=5)
 
-# Función helper para crear botones tkinter con Hover
 def crear_boton_personalizado(contenedor_padre, texto_boton, comando_boton, color_fondo_boton, color_texto_boton=COLOR_TEXTO_BOTON, ancho_boton=15):
+    
     boton_personalizado = tk.Button(contenedor_padre, text=texto_boton, font=FONT_BTN, command=comando_boton,
                     bg=color_fondo_boton, fg=color_texto_boton, width=ancho_boton,
-                    relief="flat", cursor="hand2", pady=8)
-
-        
-    boton_personalizado.bind("<Enter>")
-    boton_personalizado.bind("<Leave>")
+                    relief="flat", pady=8)
     return boton_personalizado
 
 
@@ -113,10 +109,10 @@ campo_clave_grupo.grid(row=3, column=1, padx=10, pady=5)
 
 # Botones
 
-boton_buscar = crear_boton_personalizado(marco_busqueda, "Buscar", lambda: li.buscar_alumno_por_clave(campo_clave_alumno, campo_nombre_alumno), AZUL)
+boton_buscar = crear_boton_personalizado(marco_busqueda, "Buscar", lambda: li.buscar_alumno_por_clave(campo_clave_alumno), AZUL)
 boton_buscar.grid(row=0, column=2, padx=(20,5), pady=5)
 
-boton_limpiar = crear_boton_personalizado(marco_busqueda, "Limpiar", lambda: li.limpiar_campos_alumno(campo_clave_alumno, campo_nombre_alumno), "#9E9E9E")
+boton_limpiar = crear_boton_personalizado(marco_busqueda, "Limpiar", lambda: li.limpiar_campos_alumno(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno, campo_clave_grupo), "#9E9E9E")
 boton_limpiar.grid(row=1, column=2, padx=(20,5), pady=5)
 
 #OPERACIONES CRUD Y ARCHIVOS

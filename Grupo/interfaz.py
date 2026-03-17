@@ -35,30 +35,12 @@ estilo_interfaz.configure("Card.TFrame", background="#FFFFFF", relief="flat")
 # Estilos universales para Entries
 estilo_interfaz.configure("TEntry", fieldbackground="#FFFFFF", font=FONT_ENTRY, padding=5)
 
-# Función helper para crear botones tkinter con Hover
 def crear_boton_personalizado(contenedor_padre, texto_boton, comando_boton, color_fondo_boton, color_texto_boton=COLOR_TEXTO_BOTON, ancho_boton=15):
+    
     boton_personalizado = tk.Button(contenedor_padre, text=texto_boton, font=FONT_BTN, command=comando_boton,
                     bg=color_fondo_boton, fg=color_texto_boton, width=ancho_boton,
-                    relief="flat", cursor="hand2", pady=8)
-    
-    # Efectos Hover
-    def al_entrar_mouse(evento):
-        boton_personalizado['bg'] = variante_color(color_fondo_boton, -20)
-    
-    def al_salir_mouse(evento):
-        boton_personalizado['bg'] = color_fondo_boton
-        
-    boton_personalizado.bind("<Enter>", al_entrar_mouse)
-    boton_personalizado.bind("<Leave>", al_salir_mouse)
+                    relief="flat", pady=8)
     return boton_personalizado
-
-def variante_color(color_hexadecimal, desplazamiento_brillo=1):
-    """ Función auxiliar para oscurecer colores en el hover """
-    if len(color_hexadecimal) != 7: return color_hexadecimal
-    componentes_rgb = [color_hexadecimal[x:x+2] for x in [1, 3, 5]]
-    nuevos_rgb_int = [int(componente_hex, 16) + desplazamiento_brillo for componente_hex in componentes_rgb]
-    nuevos_rgb_int = [min([255, max([0, i])]) for i in nuevos_rgb_int]
-    return "#" + "".join([hex(i)[2:].zfill(2) for i in nuevos_rgb_int])
 
 # ======= HEADER =======
 marco_encabezado = tk.Frame(ventana_principal, bg=COLOR_OSCURO, pady=15)
@@ -113,7 +95,7 @@ campo_nombre_grupo = tk.Entry(marco_busqueda, font=FONT_ENTRY, width=25, relief=
 campo_nombre_grupo.grid(row=1, column=1, padx=10, pady=5)
 
 # Botones
-boton_buscar = crear_boton_personalizado(marco_busqueda, "Buscar", lambda: li.buscar_grupo_por_clave(campo_clave_grupo, campo_nombre_grupo), AZUL)
+boton_buscar = crear_boton_personalizado(marco_busqueda, "Buscar", lambda: li.buscar_grupo_por_clave(campo_clave_grupo), AZUL)
 boton_buscar.grid(row=0, column=2, padx=(20,5), pady=5)
 boton_limpiar = crear_boton_personalizado(marco_busqueda, "Limpiar", lambda: li.limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo), "#9E9E9E")
 boton_limpiar.grid(row=1, column=2, padx=(20,5), pady=5)
@@ -131,7 +113,7 @@ marco_crud.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
 
 crear_boton_personalizado(marco_crud, "Agregar", lambda: li.agregar_grupo(campo_clave_grupo, campo_nombre_grupo), VERDE, ancho_boton=20).pack(pady=5)
 crear_boton_personalizado(marco_crud, "Modificar", lambda: li.modificar_grupo(campo_clave_grupo, campo_nombre_grupo), NARANJA, ancho_boton=20).pack(pady=5)
-crear_boton_personalizado(marco_crud, "Eliminar", lambda: li.eliminar_grupo(campo_clave_grupo, campo_nombre_grupo), ROJO, ancho_boton=20).pack(pady=5)
+crear_boton_personalizado(marco_crud, "Eliminar", lambda: li.eliminar_grupo(campo_clave_grupo), ROJO, ancho_boton=20).pack(pady=5)
 
 # Importación y Exportación
 marco_exportacion = tk.LabelFrame(marco_operaciones, text=" Importación / Exportación ", bg=COLOR_FONDO, font=FONT_LABEL, fg=COLOR_OSCURO, pady=10, padx=10)
