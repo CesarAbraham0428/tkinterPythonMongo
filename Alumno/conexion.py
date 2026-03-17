@@ -1,7 +1,7 @@
 from pymongo import MongoClient as MC
 
-cliente = MC("mongodb://localhost:27017/")
+cliente_mongodb = MC("mongodb://localhost:27017/")
 
-db = cliente["BD_GrupoAlumno"]
+bd = cliente_mongodb["BD_GrupoAlumno"]
 
-alumno = db["Alumno"]
+coleccion_alumnos = bd["Alumno"]

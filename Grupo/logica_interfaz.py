@@ -1,5 +1,6 @@
 from tkinter import messagebox
 from conexion import coleccion_grupos
+from Alumno.conexion import coleccion_alumnos
 import import_export
 import backup
 
@@ -52,13 +53,44 @@ def eliminar_grupo(campo_clave_grupo, campo_nombre_grupo):
         messagebox.showwarning("Advertencia", "Ingrese la Clave a eliminar.")
         return
     
-    # Pendiente: Validacion de eliminacion en cascada con Alumnos.
-    resultado_eliminacion = coleccion_grupos.delete_one({"cveGru": clave_grupo})
-    if resultado_eliminacion.deleted_count > 0:
-        messagebox.showinfo("Éxito", "Grupo eliminado correctamente.")
-        limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo)
-    else:
-        messagebox.showinfo("Resultado", "No se encontró el grupo para eliminar.")
+    # Verificar si el grupo existe
+    grupo_existente = coleccion_grupos.find_one({"cveGru": clave_grupo})
+    if not grupo_existente:
+        messagebox.showinfo("Resultado", "No se encontró el grupo a eliminar.")
+        return
+    
+    # Buscar si hay alumnos asociados al grupo
+    alumnos_asociados = list(coleccion_alumnos.find({"cveGru": clave_grupo}))
+    cantidad_alumnos = len(alumnos_asociados)
+    
+    # Confirmar eliminación con información de alumnos asociados
+    mensaje_confirmacion = f"¿Está seguro de eliminar el grupo '{clave_grupo}'?"
+    if cantidad_alumnos > 0:
+        mensaje_confirmacion += f"\n\nTambién se eliminarán {cantidad_alumnos} alumno(s) asociado(s) a este grupo."
+    
+    if not messagebox.askyesno("Confirmación de Eliminación", mensaje_confirmacion):
+        return
+    
+    try:
+        # Eliminar en cascada: primero los alumnos asociados al grupo
+        if cantidad_alumnos > 0:
+            resultado_eliminacion_alumnos = coleccion_alumnos.delete_many({"cveGru": clave_grupo})
+            print(f"Se eliminaron {resultado_eliminacion_alumnos.deleted_count} alumnos asociados al grupo {clave_grupo}")
+        
+        # Luego eliminar el grupo
+        resultado_eliminacion_grupo = coleccion_grupos.delete_one({"cveGru": clave_grupo})
+        
+        if resultado_eliminacion_grupo.deleted_count > 0:
+            mensaje_exito = f"Grupo eliminado correctamente."
+            if cantidad_alumnos > 0:
+                mensaje_exito += f"\nTambién se eliminaron {cantidad_alumnos} alumno(s) asociado(s)."
+            messagebox.showinfo("Éxito", mensaje_exito)
+            limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo)
+        else:
+            messagebox.showerror("Error", "No se pudo eliminar el grupo.")
+            
+    except Exception as error_excepcion:
+        messagebox.showerror("Error", f"Fallo al eliminar el grupo: {error_excepcion}")
 
 def limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo):
     campo_clave_grupo.delete(0, "end")
