@@ -35,17 +35,23 @@ def agregar_alumno(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno, c
     
     clave_alumno_str = campo_clave_alumno.get().strip()
     nombre_alumno = campo_nombre_alumno.get().strip()
-    edad_alumno = campo_edad_alumno.get().strip()
+    edad_alumno_str = campo_edad_alumno.get().strip()
     clave_grupo = campo_clave_grupo.get().strip()
 
-    if not clave_alumno_str or not nombre_alumno or not edad_alumno or not clave_grupo:
+    if not clave_alumno_str or not nombre_alumno or not edad_alumno_str or not clave_grupo:
         messagebox.showwarning("Advertencia", "Ingrese todos los datos del Alumno.")
         return
     
     try:
         clave_alumno = int(clave_alumno_str)
+        edad_alumno = int(edad_alumno_str)
     except ValueError:
-        messagebox.showwarning("Advertencia", "La clave debe ser un número entero.")
+        messagebox.showwarning("Advertencia", "La clave del Alumno y la edad deben ser números enteros.")
+        return
+    
+    # Validar que el nombre sea texto y no números
+    if nombre_alumno.isdigit():
+        messagebox.showwarning("Advertencia", "El nombre del alumno debe ser texto, no números.")
         return
     
     documento_existente = coleccion_alumnos.find_one({"cveAlu": clave_alumno})
@@ -62,7 +68,7 @@ def agregar_alumno(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno, c
 def modificar_alumno(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno, campo_clave_grupo):
     clave_alumno_str = campo_clave_alumno.get().strip()
     nombre_alumno = campo_nombre_alumno.get().strip()
-    edad_alumno = campo_edad_alumno.get().strip()
+    edad_alumno_str = campo_edad_alumno.get().strip()
     clave_grupo = campo_clave_grupo.get().strip()
     
     if not clave_alumno_str:
@@ -85,11 +91,15 @@ def modificar_alumno(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno,
     campos_a_modificar = {}
     
     if nombre_alumno:
+        # Validar que el nombre sea texto y no números
+        if nombre_alumno.isdigit():
+            messagebox.showwarning("Advertencia", "El nombre del alumno debe ser texto, no números.")
+            return
         campos_a_modificar["nomAlu"] = nombre_alumno
     
-    if edad_alumno:
+    if edad_alumno_str:
         try:
-            campos_a_modificar["edadAlu"] = int(edad_alumno)
+            campos_a_modificar["edadAlu"] = int(edad_alumno_str)
         except ValueError:
             messagebox.showwarning("Advertencia", "La edad debe ser un número entero.")
             return
