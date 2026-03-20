@@ -1,8 +1,9 @@
 from tkinter import messagebox
-from conexion import coleccion_grupos
+from conexion import coleccion_grupos, coleccion_alumnos
 
 
-def buscar_grupo_por_clave(campo_clave_grupo):
+
+def buscar_grupo_por_clave(campo_clave_grupo, campo_nombre_grupo):
     
     clave_grupo = campo_clave_grupo.get().strip()
 
@@ -56,7 +57,7 @@ def modificar_grupo(campo_clave_grupo, campo_nombre_grupo):
 
 
 
-def eliminar_grupo(campo_clave_grupo):
+def eliminar_grupo(campo_clave_grupo, campo_nombre_grupo):
 
     clave_grupo = campo_clave_grupo.get().strip()
 

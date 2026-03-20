@@ -95,7 +95,7 @@ campo_nombre_grupo = tk.Entry(marco_busqueda, font=FONT_ENTRY, width=25, relief=
 campo_nombre_grupo.grid(row=1, column=1, padx=10, pady=5)
 
 # Botones
-boton_buscar = crear_boton_personalizado(marco_busqueda, "Buscar", lambda: li.buscar_grupo_por_clave(campo_clave_grupo), AZUL)
+boton_buscar = crear_boton_personalizado(marco_busqueda, "Buscar", lambda: li.buscar_grupo_por_clave(campo_clave_grupo, campo_nombre_grupo), AZUL)
 boton_buscar.grid(row=0, column=2, padx=(20,5), pady=5)
 boton_limpiar = crear_boton_personalizado(marco_busqueda, "Limpiar", lambda: li.limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo), "#9E9E9E")
 boton_limpiar.grid(row=1, column=2, padx=(20,5), pady=5)
@@ -113,7 +113,7 @@ marco_crud.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
 
 crear_boton_personalizado(marco_crud, "Agregar", lambda: li.agregar_grupo(campo_clave_grupo, campo_nombre_grupo), VERDE, ancho_boton=20).pack(pady=5)
 crear_boton_personalizado(marco_crud, "Modificar", lambda: li.modificar_grupo(campo_clave_grupo, campo_nombre_grupo), NARANJA, ancho_boton=20).pack(pady=5)
-crear_boton_personalizado(marco_crud, "Eliminar", lambda: li.eliminar_grupo(campo_clave_grupo), ROJO, ancho_boton=20).pack(pady=5)
+crear_boton_personalizado(marco_crud, "Eliminar", lambda: li.eliminar_grupo(campo_clave_grupo, campo_nombre_grupo), ROJO, ancho_boton=20).pack(pady=5)
 
 # Importación y Exportación
 marco_exportacion = tk.LabelFrame(marco_operaciones, text=" Importación / Exportación ", bg=COLOR_FONDO, font=FONT_LABEL, fg=COLOR_OSCURO, pady=10, padx=10)
