@@ -113,9 +113,28 @@ def limpiar_campos_grupo(campo_clave_grupo, campo_nombre_grupo):
 
 
 def eliminar_todos_los_grupos():
-    if messagebox.askyesno("Confirmación", "¿Está seguro de eliminar TODOS los grupos?"):
+    # Get all group keys to know which students to delete
+    grupos = list(coleccion_grupos.find({}, {"cveGru": 1}))
+    claves_grupos = [grupo.get("cveGru") for grupo in grupos if "cveGru" in grupo]
+    
+    # Count how many students are associated with these groups
+    cantidad_alumnos = coleccion_alumnos.count_documents({"cveGru": {"$in": claves_grupos}})
+    
+    mensaje_confirmacion = "¿Está seguro de eliminar TODOS los grupos?"
+    if cantidad_alumnos > 0:
+        mensaje_confirmacion += f"\n\nTambién se eliminarán {cantidad_alumnos} alumno(s) asociado(s) a estos grupos."
+        
+    if messagebox.askyesno("Confirmación", mensaje_confirmacion):
         try:
-            resultado_eliminacion = coleccion_grupos.delete_many({})
-            messagebox.showinfo("Éxito", f"Se eliminaron {resultado_eliminacion.deleted_count} grupos.")
+            # Delete associated students first
+            resultado_eliminacion_alumnos = coleccion_alumnos.delete_many({"cveGru": {"$in": claves_grupos}})
+            # Delete all groups
+            resultado_eliminacion_grupos = coleccion_grupos.delete_many({})
+            
+            mensaje_exito = f"Se eliminaron {resultado_eliminacion_grupos.deleted_count} grupos."
+            if resultado_eliminacion_alumnos.deleted_count > 0:
+                mensaje_exito += f"\nTambién se eliminaron {resultado_eliminacion_alumnos.deleted_count} alumno(s) asociado(s)."
+                
+            messagebox.showinfo("Éxito", mensaje_exito)
         except Exception as error_excepcion:
             messagebox.showerror("Error", f"Fallo al eliminar: {error_excepcion}")
