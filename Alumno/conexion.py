@@ -5,3 +5,4 @@ cliente_mongodb = MC("mongodb://localhost:27017/")
 bd = cliente_mongodb["BD_GrupoAlumno"]
 
 coleccion_alumnos = bd["Alumno"]
+coleccion_grupos = bd["Grupo"]

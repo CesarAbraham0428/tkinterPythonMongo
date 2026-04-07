@@ -1,5 +1,5 @@
 from tkinter import messagebox
-from conexion import coleccion_alumnos
+from conexion import coleccion_alumnos, coleccion_grupos
 
 
 def buscar_alumno_por_clave(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno, campo_clave_grupo):
@@ -59,6 +59,12 @@ def agregar_alumno(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno, c
     if documento_existente:
         messagebox.showwarning("Advertencia", "Clave de alumno repetida ya existe un alumno con esa clave.")
     else:
+        # Validar si el grupo existe
+        documento_grupo = coleccion_grupos.find_one({"cveGru": clave_grupo})
+        if not documento_grupo:
+            messagebox.showwarning("Advertencia", f"La clave de grupo '{clave_grupo}' no corresponde a ningún grupo existente.")
+            return
+            
         coleccion_alumnos.insert_one({"cveAlu": clave_alumno, "nomAlu": nombre_alumno, "edadAlu": int(edad_alumno), "cveGru": clave_grupo})
         messagebox.showinfo("Éxito", "alumno agregado correctamente.")
         limpiar_campos_alumno(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno, campo_clave_grupo)
@@ -105,6 +111,10 @@ def modificar_alumno(campo_clave_alumno, campo_nombre_alumno, campo_edad_alumno,
             return
     
     if clave_grupo:
+        documento_grupo = coleccion_grupos.find_one({"cveGru": clave_grupo})
+        if not documento_grupo:
+            messagebox.showwarning("Advertencia", f"La clave de grupo '{clave_grupo}' no corresponde a ningún grupo existente.")
+            return
         campos_a_modificar["cveGru"] = clave_grupo
     
     if not campos_a_modificar:
